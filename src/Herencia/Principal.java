@@ -114,6 +114,8 @@ public class Principal extends javax.swing.JFrame {
         gbc.gridx = 0; gbc.gridy = 1;
         panel.add(new JLabel("Codigo Unico:"),gbc);
         gbc.gridx = 1;
+        txtCodigo = new JTextField(20);
+        panel.add(txtCodigo, gbc);
         
         // titulo
         gbc.gridx = 0; gbc.gridy = 2;
@@ -210,11 +212,11 @@ public class Principal extends javax.swing.JFrame {
         try{
             anio = Integer.parseInt(anioTexto);
             if (anio <= 0 || anio > anioActual){
-                JOptionPane.showMessageDialog(this, "El anio debe ser un valor valido entre 1 y " + anioActual + ".", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "El año debe ser un valor valido entre 1 y " + anioActual + ".", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
         }catch (NumberFormatException e){
-            JOptionPane.showMessageDialog(this, "El anio de publicacion debe ser un numero entero.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "El año de publicacion debe ser un numero entero.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
         
@@ -242,14 +244,18 @@ public class Principal extends javax.swing.JFrame {
         } else if ("Tesis".equals(tipo)) {
             nuevoMaterial = new Tesis(codigo, titulo, anio, rutaImagen, campoEspec);
         }
-        /*
+        
         if (nuevoMaterial != null) {
-            biblioteca.agregarMaterial(nuevoMaterial);
-            JOptionPane.showMessageDialog(this, "Material registrado exitosamente.", "Exito", JOptionPane.INFORMATION_MESSAGE);
-            limpiarFormularioRegistro();
-            actualizarTabla();
+            try{
+                biblioteca.registrarMaterial(nuevoMaterial);
+                JOptionPane.showMessageDialog(this, "Material registrado exitosamente.", "Exito", JOptionPane.INFORMATION_MESSAGE);
+                limpiarFormularioRegistro();
+                actualizarTabla();
+            }catch(Exception e){
+                JOptionPane.showMessageDialog(this, e.getMessage(), "Error al Registrar", JOptionPane.ERROR_MESSAGE);
+            }
         }
-        */
+        
     }
 
     private JPanel crearPanelPrestamosDevoluciones() {
@@ -257,11 +263,61 @@ public class Principal extends javax.swing.JFrame {
     }
     
     public void actualizarTabla(){
-        
+        if (modeloTabla == null) return;
+        modeloTabla.setRowCount(0);
+
+        for (int i = 0; i < biblioteca.getCantidadMateriales(); i++) {
+            MaterialBibliografico mat = biblioteca.getMaterial(i);
+
+            Object[] fila = {
+                    mat.getCodigo(),
+                    mat.getTitulo(),
+                    mat.getTipo(),
+                    mat.getAnioPublicacion(),
+                    mat.getDatoEspecifico(),
+                    mat.getRutaImagen(),
+                    mat.isDisponible() ? "Disponible" : "Prestado"
+            };
+            modeloTabla.addRow(fila);
+        }
+    }
+    
+    private void limpiarFormularioRegistro() {
+        txtCodigo.setText("");
+        txtTitulo.setText("");
+        txtAnio.setText("");
+        txtCampoEspecifico.setText("");
+        txtRutaImagen.setText("");
+        comboTipo.setSelectedIndex(0);
     }
     
     private void ejecutarBusquedaRecursiva() {
-        
+        String codigo = txtCodigoBuscar.getText().trim();
+        if (codigo.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Ingrese el codigo del material que desea buscar.", "Atencion", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        try {
+            // Biblioteca tiene buscarPorCodigo, el cual internamente llama al metodo recursivo
+            MaterialBibliografico mat = biblioteca.buscarPorCodigo(codigo);
+
+            if (mat != null) {
+                String mensaje = "Material Encontrado:\n\n" +
+                        "Codigo: " + mat.getCodigo() + "\n" +
+                        "Titulo: " + mat.getTitulo() + "\n" +
+                        "Tipo: " + mat.getTipo() + "\n" +
+                        "Anio: " + mat.getAnioPublicacion() + "\n" +
+                        "Disponible: " + (mat.isDisponible() ? "Si" : "No") + "\n" +
+                        "Plazo de Prestamo: " + mat.getPlazoPrestamo() + " dias\n" +
+                        "Multa por dia: " + mat.getMultaDiaria() + " EUR";
+                JOptionPane.showMessageDialog(this, mensaje, "Resultado de Busqueda", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this, "No se encontro ningun material con el codigo: " + codigo, "No Encontrado", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "No se encontro ningun material con el codigo: " + codigo, "No Encontrado", JOptionPane.ERROR_MESSAGE);
+        }
     }
     
     /**
