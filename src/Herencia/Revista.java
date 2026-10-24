@@ -10,8 +10,8 @@ package Herencia;
  */
 public class Revista extends MaterialBibliografico{
     private String edicion;
-    private static final int PLAZO_REVISTA = 6;
-    private static final double MULTA_REVISTA = 1.20;
+    private static final int PLAZO_REVISTA = 7;
+    private static final double MULTA_REVISTA = 0.75;
     
     
     public Revista(String codigo, String titulo, int anioPublicacion, String rutaImagen, String edicion){

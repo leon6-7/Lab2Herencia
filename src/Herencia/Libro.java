@@ -18,7 +18,7 @@ public class Libro extends MaterialBibliografico{
         super(codigo, titulo, anioPublicacion, rutaImagen);
         this.nombreAutor=nombreAutor;
      }
-
+     
     public String getNombreAutor() {
         return nombreAutor;
     }

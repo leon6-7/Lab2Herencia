@@ -76,12 +76,23 @@ public class Principal extends javax.swing.JFrame {
         
         String[] columnas = {"Codigo", "Titulo", "Tipo", "Año", "Dato Especifico", "Ruta Imagen", "Disponibilidad"};
         modeloTabla = new DefaultTableModel(columnas, 0) {
-            @Override
-             public boolean isCellEditable(int row, int column){
-                 return false;
-             }   
+        @Override
+        public boolean isCellEditable(int row, int column) {
+            return false;
+        }
+
+        @Override
+        public Class<?> getColumnClass(int columna) {
+            if (columna == 5) {        
+                return ImageIcon.class;
+            }
+            return Object.class;
+            }
         };
-        
+
+        tablaMateriales = new JTable(modeloTabla);
+        tablaMateriales.setRowHeight(80);   
+
         tablaMateriales = new JTable(modeloTabla);
         JScrollPane scrollPane = new JScrollPane(tablaMateriales);
         panel.add(scrollPane, BorderLayout.CENTER);
@@ -268,17 +279,18 @@ public class Principal extends javax.swing.JFrame {
 
         for (int i = 0; i < biblioteca.getCantidadMateriales(); i++) {
             MaterialBibliografico mat = biblioteca.getMaterial(i);
-
+            ImageIcon imagen = CargadorImagenes.cargar(mat.getRutaImagen(), 50, 65);
             Object[] fila = {
                     mat.getCodigo(),
                     mat.getTitulo(),
                     mat.getTipo(),
                     mat.getAnioPublicacion(),
                     mat.getDatoEspecifico(),
-                    mat.getRutaImagen(),
+                    imagen,
                     mat.isDisponible() ? "Disponible" : "Prestado"
             };
             modeloTabla.addRow(fila);
+            tablaMateriales.setRowHeight(i, 70);
         }
     }
     
