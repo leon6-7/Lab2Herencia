@@ -14,7 +14,7 @@ public class Principal extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Principal.class.getName());
     
-    
+    private Biblioteca biblioteca;
     
     private JTable tablaMateriales;
     private DefaultTableModel modeloTabla;
@@ -69,12 +69,12 @@ public class Principal extends javax.swing.JFrame {
         txtCodigoBuscar = new JTextField(15);
         panelBusqueda.add(txtCodigoBuscar);
         
-        btnBuscar = new JButton("Buscar (Recursivo");
+        btnBuscar = new JButton("Buscar");
         panelBusqueda.add(btnBuscar);
         
         panel.add(panelBusqueda, BorderLayout.NORTH);
         
-        String[] columnas = {"Codigo", "Titulo", "Tipo", "Anio", "Dato Especifico", "Ruta Imagen", "Disponibilidad"};
+        String[] columnas = {"Codigo", "Titulo", "Tipo", "Año", "Dato Especifico", "Ruta Imagen", "Disponibilidad"};
         modeloTabla = new DefaultTableModel(columnas, 0) {
             @Override
              public boolean isCellEditable(int row, int column){
@@ -98,14 +98,163 @@ public class Principal extends javax.swing.JFrame {
     
     private JPanel crearPanelRegistro(){
         JPanel panel = new JPanel(new GridBagLayout());
+        panel.setBorder(BorderFactory.createTitledBorder("Registrar Nuevo Material Bibliografico"));
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(8,8,8,8);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
         
+        // tipo de material
+        gbc.gridx = 0; gbc.gridy = 0;
+        panel.add(new JLabel("Tipo de Material:"),gbc);
+        gbc.gridx = 1;
+        comboTipo = new JComboBox<>(new String[]{"Libro","Revista","Tesis"});
+        panel.add(comboTipo, gbc);
         
+        // codigo
+        gbc.gridx = 0; gbc.gridy = 1;
+        panel.add(new JLabel("Codigo Unico:"),gbc);
+        gbc.gridx = 1;
+        
+        // titulo
+        gbc.gridx = 0; gbc.gridy = 2;
+        panel.add(new JLabel("Título:"), gbc);
+        gbc.gridx = 1;
+        txtTitulo = new JTextField(20);
+        panel.add(txtTitulo, gbc);
+
+        // año de publicación
+        gbc.gridx = 0; gbc.gridy = 3;
+        panel.add(new JLabel("Año de Publicacion:"), gbc);
+        gbc.gridx = 1;
+        txtAnio = new JTextField(20);
+        panel.add(txtAnio, gbc);
+
+        // campo especifico (Autor / Edición / Tesista)
+        gbc.gridx = 0; gbc.gridy = 4;
+        lblCampoEspecifico = new JLabel("Autor:");
+        panel.add(lblCampoEspecifico, gbc);
+        gbc.gridx = 1;
+        txtCampoEspecifico = new JTextField(20);
+        panel.add(txtCampoEspecifico, gbc);
+
+        // ruta de la Imagen
+        gbc.gridx = 0; gbc.gridy = 5;
+        panel.add(new JLabel("Imagen:"), gbc);
+        gbc.gridx = 1;
+        JPanel panelImagen = new JPanel(new BorderLayout(5, 0));
+        txtRutaImagen = new JTextField(15);
+        txtRutaImagen.setEditable(false);
+        btnSeleccionarImagen = new JButton("Buscar...");
+        panelImagen.add(txtRutaImagen, BorderLayout.CENTER);
+        panelImagen.add(btnSeleccionarImagen, BorderLayout.EAST);
+        panel.add(panelImagen, gbc);
+
+        // boton para registrar
+        gbc.gridx = 0; gbc.gridy = 6; gbc.gridwidth = 2;
+        btnRegistrar = new JButton("Registrar Material");
+        panel.add(btnRegistrar, gbc);
+
+        // para cambiar dinamicamente la etiqueta segun lo seleccionado del comboBox
+        comboTipo.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String tipo = (String) comboTipo.getSelectedItem();
+                if ("Libro".equals(tipo)) {
+                    lblCampoEspecifico.setText("Autor:");
+                } else if ("Revista".equals(tipo)) {
+                    lblCampoEspecifico.setText("Número de Edición:");
+                } else if ("Tesis".equals(tipo)) {
+                    lblCampoEspecifico.setText("Tesista / Autor Académico:");
+                }
+            }
+        });
+        
+        btnSeleccionarImagen.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFileChooser fileChooser = new JFileChooser();
+                int resultado = fileChooser.showOpenDialog(Principal.this);
+                if (resultado == JFileChooser.APPROVE_OPTION) {
+                    File archivo = fileChooser.getSelectedFile();
+                    txtRutaImagen.setText(archivo.getAbsolutePath());
+                }
+            }
+        });
+        
+        btnRegistrar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                registrarMaterial();
+            }
+        });
         
         return panel;
     }
     
+    private void registrarMaterial() {
+        String tipo = (String) comboTipo.getSelectedItem();
+        String codigo = txtCodigo.getText().trim();
+        String titulo = txtTitulo.getText().trim();
+        String anioTexto = txtAnio.getText().trim();
+        String campoEspec = txtCampoEspecifico.getText().trim();
+        String rutaImagen = txtRutaImagen.getText().trim();
+        
+        if (codigo.isEmpty() || titulo.isEmpty() || anioTexto.isEmpty() || campoEspec.isEmpty()){
+            JOptionPane.showMessageDialog(this, "Por favor complete todos los campos obligatorios.", "Error de Validacion", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        int anioActual = Calendar.getInstance().get(Calendar.YEAR);
+        int anio;
+        try{
+            anio = Integer.parseInt(anioTexto);
+            if (anio <= 0 || anio > anioActual){
+                JOptionPane.showMessageDialog(this, "El anio debe ser un valor valido entre 1 y " + anioActual + ".", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        }catch (NumberFormatException e){
+            JOptionPane.showMessageDialog(this, "El anio de publicacion debe ser un numero entero.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        /*
+        if (biblioteca.buscarMaterialRecursivo(codigo, 0) != null) {
+            JOptionPane.showMessageDialog(this, "El codigo '" + codigo + "' ya se encuentra registrado.", "Codigo Duplicado", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        */
+        if (rutaImagen.isEmpty()) {
+            rutaImagen = "Sin imagen";
+        }
+
+        MaterialBibliografico nuevoMaterial = null;
+        if ("Libro".equals(tipo)) {
+            nuevoMaterial = new Libro(codigo, titulo, anio, rutaImagen, campoEspec);
+        } else if ("Revista".equals(tipo)) {
+            int edicion = 1;
+            try {
+                edicion = Integer.parseInt(campoEspec);
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "El numero de edicion debe ser un entero valido.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            nuevoMaterial = new Revista(codigo, titulo, anio, rutaImagen, campoEspec);
+        } else if ("Tesis".equals(tipo)) {
+            nuevoMaterial = new Tesis(codigo, titulo, anio, rutaImagen, campoEspec);
+        }
+        /*
+        if (nuevoMaterial != null) {
+            biblioteca.agregarMaterial(nuevoMaterial);
+            JOptionPane.showMessageDialog(this, "Material registrado exitosamente.", "Exito", JOptionPane.INFORMATION_MESSAGE);
+            limpiarFormularioRegistro();
+            actualizarTabla();
+        }
+        */
+    }
+    
     private JPanel crearPanelPrestamosDevoluciones(){
         JPanel panel = new JPanel(new GridLayout(1,2,10,10));
+        panel.setBorder(BorderFactory.createEmptyBorder(15,15,15,15));
+        
         return panel;
     }
     
