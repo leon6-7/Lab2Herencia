@@ -14,8 +14,7 @@ public class Principal extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Principal.class.getName());
     
-    
-    
+    private Biblioteca biblioteca = new Biblioteca();
     private JTable tablaMateriales;
     private DefaultTableModel modeloTabla;
     private JTextField txtCodigoBuscar;
@@ -104,9 +103,8 @@ public class Principal extends javax.swing.JFrame {
         return panel;
     }
     
-    private JPanel crearPanelPrestamosDevoluciones(){
-        JPanel panel = new JPanel(new GridLayout(1,2,10,10));
-        return panel;
+   private JPanel crearPanelPrestamosDevoluciones() {
+    return new PanelPrestamosDevoluciones(biblioteca, this::actualizarTabla);
     }
     
     public void actualizarTabla(){
