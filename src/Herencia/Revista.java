@@ -47,7 +47,7 @@ public class Revista extends MaterialBibliografico{
     
     @Override
     public String getTipo() {
-        return "Libro";
+        return "Revista";
     }
     @Override
     public String toString() {

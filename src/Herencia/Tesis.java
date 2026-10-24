@@ -10,8 +10,8 @@ package Herencia;
  */
 public class Tesis extends MaterialBibliografico{
     private String tesista;
-    private static final int PLAZO_TESIS = 6;
-    private static final double MULTA_TESIS = 1.20;
+    private static final int PLAZO_TESIS = 3;
+    private static final double MULTA_TESIS = 3.00;
     
     
     public Tesis(String codigo, String titulo, int anioPublicacion, String rutaImagen, String tesista){

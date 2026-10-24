@@ -10,7 +10,6 @@ package Herencia;
  */
 public class MaterialBibliografico {
  
-    // Valores por defecto de un material generico
     private static final int PLAZO_POR_DEFECTO = 7;
     private static final double MULTA_POR_DEFECTO = 1.00;
  
