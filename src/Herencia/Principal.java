@@ -217,12 +217,12 @@ public class Principal extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "El anio de publicacion debe ser un numero entero.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        /*
-        if (biblioteca.buscarMaterialRecursivo(codigo, 0) != null) {
+        
+        if (biblioteca.buscarRecursivo(codigo, 0) != null) {
             JOptionPane.showMessageDialog(this, "El codigo '" + codigo + "' ya se encuentra registrado.", "Codigo Duplicado", JOptionPane.WARNING_MESSAGE);
             return;
         }
-        */
+        
         if (rutaImagen.isEmpty()) {
             rutaImagen = "Sin imagen";
         }
@@ -251,15 +251,9 @@ public class Principal extends javax.swing.JFrame {
         }
         */
     }
-    
-    private JPanel crearPanelPrestamosDevoluciones(){
-        JPanel panel = new JPanel(new GridLayout(1,2,10,10));
-        panel.setBorder(BorderFactory.createEmptyBorder(15,15,15,15));
-        
-        return panel;
 
-   private JPanel crearPanelPrestamosDevoluciones() {
-    return new PanelPrestamosDevoluciones(biblioteca, this::actualizarTabla);
+    private JPanel crearPanelPrestamosDevoluciones() {
+        return new PanelPrestamosDevoluciones(biblioteca, this::actualizarTabla);
     }
     
     public void actualizarTabla(){

@@ -45,7 +45,7 @@ public class Biblioteca {
         return buscarRecursivo(codigo.trim(), 0);
     }
 
-    private MaterialBibliografico buscarRecursivo(String codigo, int posicion) {
+    public MaterialBibliografico buscarRecursivo(String codigo, int posicion) {
         if (posicion >= cantidadMateriales) {
             return null;
         }
