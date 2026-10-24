@@ -13,8 +13,8 @@ import java.util.Calendar;
 public class Principal extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Principal.class.getName());
-    
-    private Biblioteca biblioteca;
+   
+    private Biblioteca biblioteca = new Biblioteca();
     
     private JTable tablaMateriales;
     private DefaultTableModel modeloTabla;
@@ -191,6 +191,7 @@ public class Principal extends javax.swing.JFrame {
         return panel;
     }
     
+
     private void registrarMaterial() {
         String tipo = (String) comboTipo.getSelectedItem();
         String codigo = txtCodigo.getText().trim();
@@ -256,6 +257,9 @@ public class Principal extends javax.swing.JFrame {
         panel.setBorder(BorderFactory.createEmptyBorder(15,15,15,15));
         
         return panel;
+
+   private JPanel crearPanelPrestamosDevoluciones() {
+    return new PanelPrestamosDevoluciones(biblioteca, this::actualizarTabla);
     }
     
     public void actualizarTabla(){
