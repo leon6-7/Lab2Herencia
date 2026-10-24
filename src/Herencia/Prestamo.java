@@ -14,16 +14,10 @@ public class Prestamo {
     private int diasRetraso;
     private double multa;
 
-    public Prestamo(MaterialBibliografico material) {
-        this(material, Calendar.getInstance());
-    }
-
-    public Prestamo(MaterialBibliografico material, Calendar inicio) {
+    public Prestamo(MaterialBibliografico material, Calendar inicio, Calendar fechaPrevista) {
         this.material = material;
         this.fechaInicio = normalizar(inicio);
         this.fechaPrevista = (Calendar) this.fechaInicio.clone();
-        // El plazo lo determina el objeto concreto (Libro, Revista, Tesis)
-        this.fechaPrevista.add(Calendar.DAY_OF_MONTH, material.getPlazoPrestamo());
         this.fechaDevolucion = null;
         this.activo = true;
         this.diasRetraso = 0;
@@ -43,7 +37,6 @@ public class Prestamo {
         }
         this.fechaDevolucion = normalizar(fecha);
         this.diasRetraso = calcularDiasRetraso(fechaPrevista, fechaDevolucion);
-        // Polimorfismo: la multa depende del objeto concreto
         this.multa = material.calcularMulta(diasRetraso);
         this.activo = false;
     }
@@ -63,10 +56,10 @@ public class Prestamo {
         if (!devolucion.after(prevista)) {
             return 0;
         }
-        Calendar cursor = (Calendar) prevista.clone();
+        Calendar temp = (Calendar) prevista.clone();
         int dias = 0;
-        while (cursor.before(devolucion)) {
-            cursor.add(Calendar.DAY_OF_MONTH, 1);
+        while (temp.before(devolucion)) {
+            temp.add(Calendar.DAY_OF_MONTH, 1);
             dias++;
         }
         return dias;
@@ -104,6 +97,11 @@ public class Prestamo {
         return activo;
     }
 
+    public void setActivo(boolean activo) {
+        this.activo = activo;
+    }
+
+   
     public int getDiasRetraso() {
         return diasRetraso;
     }
